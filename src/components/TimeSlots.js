@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const TimeSlots = () => {
+const TimeSlots = ({ setTitle }) => {
   const classes = useStyles();
 
   const [addPopup, setAddPopup] = useState(false);
@@ -37,18 +37,19 @@ const TimeSlots = () => {
   const [start, setStart] = useState(new Date());
   const [end, setEnd] = useState(new Date());
   
-  const getTimeSlots = () => {
-    requestApi(api_url + "/api/modify/timeslot", "GET")
-    .then(response => {
+  const getTimeSlots = async () => {
+    const response = await requestApi(api_url + "/api/modify/timeslot", "GET")
       
-      if(response.response)
-        setTimeSlots(response.response);
-      else
-        alert('Something went wrong');
-    })
+    if(response.response)
+      setTimeSlots(response.response);
+    else
+      alert('Something went wrong');
   }
 
-  useEffect(getTimeSlots, []);
+  useEffect(() => {
+    getTimeSlots();
+    setTitle("TimeSlots");
+  }, []);
 
   const closePopup = () => {
     setAddPopup(false);
@@ -122,7 +123,6 @@ const TimeSlots = () => {
         </DialogActions>
       </Dialog>
 
-      <h1>Time Slots</h1>
       <TableContainer>
         <Table>
           <TableHead>

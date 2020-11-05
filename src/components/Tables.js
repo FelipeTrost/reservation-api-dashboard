@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Tables = () => {
+const Tables = ({ setTitle }) => {
   const classes = useStyles();
 
   const [addPopup, setAddPopup] = useState(false);
@@ -38,18 +38,19 @@ const Tables = () => {
   const [capacity, setCapacity] = useState(0);
   const [description, setDescription] = useState('');
 
-  const getTables = () => {
-    requestApi(api_url + "/api/modify/table", "GET")
-    .then(response => {
-      console.log(response);
-      if(response.response)
-        setTables(response.response);
-      else
-        alert('Something went wrong');
-    })
+  const getTables = async () => {
+    const response = await requestApi(api_url + "/api/modify/table", "GET")
+  
+    if(response.response)
+      setTables(response.response);
+    else
+      alert('Something went wrong');
   }
 
-  useEffect(getTables, []);
+  useEffect(() => {
+    getTables();
+    setTitle("Tables");
+  }, []);
 
   const closePopup = () => {
     setAddPopup(false);
@@ -141,7 +142,6 @@ const Tables = () => {
         </DialogActions>
       </Dialog>
 
-      <h1>Tables</h1>
       <TableContainer>
         <Table>
           <TableHead>

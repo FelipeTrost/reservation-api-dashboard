@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext'
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Drawer, Fab, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { Navigation, Home, AccessTime, EventSeat, People, ExitToApp } from '@material-ui/icons';
+import { Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography } from '@material-ui/core';
+import { Home, AccessTime, EventSeat, People, ExitToApp } from '@material-ui/icons';
+import MenuIcon from '@material-ui/icons/Menu';
 import {useHistory} from "react-router-dom";
 
 const useStyles = makeStyles({
@@ -18,10 +19,13 @@ const useStyles = makeStyles({
   },
   header: {
     padding: 20
+  },
+  nav:{
+    marginBottom: 20
   }
 });
 
-const Nav = () => {
+const Nav = ({ title }) => {
   const classes = useStyles();
   const [menu, setMenu] = useState(false);
   
@@ -31,6 +35,22 @@ const Nav = () => {
   if(!loggedIn) return <> </>;
 
   return (<>
+        <AppBar position="static" className={classes.nav}>
+          <Toolbar>
+            <IconButton 
+              edge="start"
+              color="inherit" 
+              aria-label="menu" 
+              onClick={() => setMenu(cu => !cu)} 
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6">
+              {title}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+
         <Drawer anchor="left" open={menu} onClose={() => setMenu(false)} onClick={() => setMenu(false)}>
             <div className={classes.list}>
             <h3 className={classes.header}>Grüne Gans</h3>
@@ -58,11 +78,6 @@ const Nav = () => {
             </List>
             </div>
         </Drawer>
-
-        <Fab variant='extended' className={classes.floatingButton} aria-label="Menu" onClick={() => setMenu(cu => !cu)  }>
-        <Navigation className={classes.extendedIcon} />
-        Menu
-        </Fab>
     </>)
 }
 

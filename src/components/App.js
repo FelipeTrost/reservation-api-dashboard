@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import { AuthProvider } from '../contexts/AuthContext'
@@ -13,21 +13,26 @@ import Bookings from './Bookings';
 import Nav from './Nav';
 
 const App = () => {
+  const [title, setTitle] = useState("Home");
+
   return (
-    <Container>
-      <Router>
-        <AuthProvider>
-          <Nav />
+    <Router>
+      <AuthProvider>
+        <Nav title={title} />
+        <Container>
           <Switch>
             <Route exact path="/login" component={Login} />
-            <PrivateRoute exact path="/tables" component={Tables} />
-            <PrivateRoute exact path="/timeslots" component={TimeSlots} />
-            <PrivateRoute exact path="/bookings" component={Bookings} />
-            <PrivateRoute path="/" component={() => <p>Starting page</p>} />
+            <PrivateRoute exact path="/tables" component={() => <Tables setTitle={setTitle} />} />
+            <PrivateRoute exact path="/timeslots" component={() => <TimeSlots setTitle={setTitle} />} />
+            <PrivateRoute exact path="/bookings" component={() => <Bookings setTitle={setTitle} />} />
+            <PrivateRoute path="/" component={() => {
+              setTitle("Home");
+              return <p>Starting page</p>;
+            }} />
           </Switch>
-        </AuthProvider>
-      </Router>
-    </Container>
+        </Container>
+      </AuthProvider>
+    </Router>
   )
 }
 

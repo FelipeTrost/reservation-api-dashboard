@@ -23,35 +23,39 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Bookings = () => {
+const Bookings = ({ setTitle }) => {
   const classes = useStyles();
 
   // const [addPopup, setAddPopup] = useState(false);
 
-  const [bookings, setBookings] = useState([]);
+  const [tables, setTables] = useState([]);
   const {requestApi} = useAuth();
   const [dateInput, setDateInput] = useState(new Date());
 
-  const getBookings = () => {
+  const getBookings = async () => {
     const year = dateInput.getFullYear();
     const month = dateInput.getMonth() + 1;
     const day = dateInput.getDate();
 
-    requestApi(api_url + "/api/modify/booking", "GET", {
-      year,
-      month,
-      day
-    })
-    .then(response => {
-      console.log(response);
-      if(response.success && response.response)
-        setBookings(response.response);
-      else
-        alert('Something went wrong');
-    })
+    
+    const response = await requestApi(api_url + "/api/modify/bookingcomplete", "GET", {
+        year,
+        month,
+        day
+      })
+      
+    if(response.success && response.response){
+      console.log(response.response);
+      setTables(response.response);
+    }else{
+      alert("Error fetching information")
+    }
   }
 
-  useEffect(getBookings, [dateInput]);
+  useEffect(() => {
+    getBookings();
+    setTitle("Bookings");
+  }, [dateInput]);
 
   const deleteBooking = async timeslotId =>{
     const response = await requestApi(api_url + '/api/modify/timeslot', 'DELETE', {
@@ -85,38 +89,56 @@ const Bookings = () => {
           </Button>
         </DialogActions>
       </Dialog> */}
-
-      <h1>Bokings</h1>
       
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <KeyboardDatePicker value={dateInput} onChange={setDateInput} label='Start' />
       </MuiPickersUtilsProvider>
       <Button onClick={getBookings}><Refresh /></Button>
-      
+
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Number of persons</TableCell>
-              <TableCell>Tables</TableCell>
-              <TableCell>Time</TableCell>
-              <TableCell>Time Slot</TableCell>
-              <TableCell>Email</TableCell>
+              <TableCell>Table</TableCell>
+              <TableCell>Capacity</TableCell>
+              <TableCell>Bookings</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {bookings.map(booking => (
-              <TableRow key={booking._id}>
-                <TableCell>{booking.noOfPersons}</TableCell>
-                <TableCell>{booking.tables.map(t => t.tableIdentifier).join(", ") }</TableCell>
-                <TableCell>{booking.time}</TableCell>
-                <TableCell>{booking.timeslotLiteral}</TableCell>
-                <TableCell>{booking.email}</TableCell>
+            {tables.map(table => (
+              <TableRow key={table._id}>
+                <TableCell>{table.tableIdentifier}</TableCell>
+                <TableCell>{table.capacity}</TableCell>
+                <TableCell>
+                  {table.bookings.map(booking => (
+                    <TableContainer key={booking._id}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Number of persons</TableCell>
+                            <TableCell>Time</TableCell>
+                            <TableCell>Time Slot</TableCell>
+                            <TableCell>Email</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow key={booking._id}>
+                              <TableCell>{booking.noOfPersons}</TableCell>
+                              <TableCell>{booking.time}</TableCell>
+                              <TableCell>{booking.timeslotLiteral}</TableCell>
+                              <TableCell>{booking.email}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                      </Table>
+                    </TableContainer>))}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      
+      
 
       <Fab color="primary" className={classes.floatingButton} aria-label="add" 
       disabled
