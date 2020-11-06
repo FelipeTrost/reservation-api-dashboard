@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography } from '@material-ui/core';
-import { Home, AccessTime, EventSeat, People, ExitToApp } from '@material-ui/icons';
+import { AccessTime, EventSeat, People, ExitToApp } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
 import {useHistory} from "react-router-dom";
 
@@ -55,10 +55,6 @@ const Nav = ({ title }) => {
             <div className={classes.list}>
             <h3 className={classes.header}>Grüne Gans</h3>
             <List>
-                <ListItem button onClick={() => history.push('/')}>
-                    <ListItemIcon><Home /></ListItemIcon>
-                    <ListItemText>Start</ListItemText>
-                </ListItem>
                 <ListItem button onClick={() => history.push('/tables')}>
                     <ListItemIcon><EventSeat /></ListItemIcon>
                     <ListItemText>Tables</ListItemText>

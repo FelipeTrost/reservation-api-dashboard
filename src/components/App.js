@@ -13,7 +13,7 @@ import Bookings from './Bookings';
 import Nav from './Nav';
 
 const App = () => {
-  const [title, setTitle] = useState("Home");
+  const [title, setTitle] = useState("");
 
   return (
     <Router>
@@ -22,13 +22,9 @@ const App = () => {
         <Container>
           <Switch>
             <Route exact path="/login" component={Login} />
+            <PrivateRoute exact path={["/bookings", "/"]} component={() => <Bookings setTitle={setTitle} />} />
             <PrivateRoute exact path="/tables" component={() => <Tables setTitle={setTitle} />} />
             <PrivateRoute exact path="/timeslots" component={() => <TimeSlots setTitle={setTitle} />} />
-            <PrivateRoute exact path="/bookings" component={() => <Bookings setTitle={setTitle} />} />
-            <PrivateRoute path="/" component={() => {
-              setTitle("Home");
-              return <p>Starting page</p>;
-            }} />
           </Switch>
         </Container>
       </AuthProvider>
