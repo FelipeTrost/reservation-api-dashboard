@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import {api_url} from '../config';
-import { Table, TableCell, TableRow, TableContainer, TableHead, TableBody, Fab, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
-import { Create, Delete, Add, Refresh } from '@material-ui/icons';
+import { Table, TableCell, TableRow, TableContainer, TableHead, TableBody, Fab, Button } from '@material-ui/core';
+import { Add, Refresh } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -26,9 +26,8 @@ const useStyles = makeStyles(theme => ({
 const Bookings = ({ setTitle }) => {
   const classes = useStyles();
 
-  // const [addPopup, setAddPopup] = useState(false);
-
   const [tables, setTables] = useState([]);
+  const [timeSlots, setTimeSlots] = useState([]);
   const {requestApi} = useAuth();
   const [dateInput, setDateInput] = useState(new Date());
 
@@ -45,106 +44,79 @@ const Bookings = ({ setTitle }) => {
       })
       
     if(response.success && response.response){
-      console.log(response.response);
-      setTables(response.response);
+      setTables(response.response.tables);
+      setTimeSlots(response.response.timeSlots);
     }else{
       alert("Error fetching information")
     }
   }
 
-  useEffect(() => {
-    getBookings();
-    setTitle("Bookings");
-  }, [dateInput]);
-
-  const deleteBooking = async timeslotId =>{
-    const response = await requestApi(api_url + '/api/modify/timeslot', 'DELETE', {
-      timeslotId
-    });
-
-    if(!response.success)
-      alert('Error, tey again');
-
-    getBookings();
-  }
+  useEffect(() => {getBookings()}, [dateInput]);
+  
 
   return (
     <div>
-      {/* <Dialog open={addPopup} onClose={closePopup} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Add table</DialogTitle>
-        <DialogContent>
-          <form>
-            <TextField autoFocus margin="dense" label="Start" type="number" value={start} onChange={e => setStart(e.target.value)} fullWidth />
-            <br /><br />
-            <TextField autoFocus margin="dense" label="End" type="number" value={end} onChange={e => setEnd(e.target.value)} fullWidth />
-            <br /><br />
-          </form>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closePopup} color="primary">
-            Cancel
-          </Button>
-          <Button type='submit' color="primary" onClick={createtimeSlot}>
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog> */}
-      
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDatePicker value={dateInput} onChange={setDateInput} label='Start' />
-      </MuiPickersUtilsProvider>
-      <Button onClick={getBookings}><Refresh /></Button>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <KeyboardDatePicker value={dateInput} onChange={setDateInput} label='Start' />
+        </MuiPickersUtilsProvider>
 
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Table</TableCell>
-              <TableCell>Capacity</TableCell>
-              <TableCell>Bookings</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {tables.map(table => (
-              <TableRow key={table._id}>
-                <TableCell>{table.tableIdentifier}</TableCell>
-                <TableCell>{table.capacity}</TableCell>
-                <TableCell>
-                  {table.bookings.map(booking => (
-                    <TableContainer key={booking._id}>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Number of persons</TableCell>
-                            <TableCell>Time</TableCell>
-                            <TableCell>Time Slot</TableCell>
-                            <TableCell>Email</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            <TableRow key={booking._id}>
-                              <TableCell>{booking.noOfPersons}</TableCell>
-                              <TableCell>{booking.time}</TableCell>
-                              <TableCell>{booking.timeslotLiteral}</TableCell>
-                              <TableCell>{booking.email}</TableCell>
-                            </TableRow>
-                        </TableBody>
-                      </Table>
-                    </TableContainer>))}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      
-      
+        <Button onClick={getBookings}><Refresh /></Button>
 
-      <Fab color="primary" className={classes.floatingButton} aria-label="add" 
-      disabled
-      >
+        <TableContainer>
+            <Table style={{marginTop: 30}}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell style={{borderRight: "1px #e0e0e0 solid"}}>Table</TableCell>
+                        {timeSlots.map((ts, i) => (<>
+                            <TableCell key={i} colSpan={3} align="center" style={{borderRight: i !== timeSlots.length - 1 && "1px #e0e0e0 solid"}}>
+                                { `${ts.start}-${ts.end}` }
+                            </TableCell>
+                        </>))}
+                    </TableRow>
+                    <TableRow>
+                    <TableCell style={{borderRight: "1px #e0e0e0 solid"}}></TableCell>
+                        {timeSlots.map((_, i) => (
+                            <Fragment key={i}>
+                                    <TableCell size="small">Zeit</TableCell>
+                                    <TableCell size="small">Personen</TableCell>
+                                    <TableCell size="small" style={{borderRight: i !== timeSlots.length - 1 && "1px #e0e0e0 solid"}}>Name</TableCell>
+                            </Fragment>
+                        ))}
+                    </TableRow>
+                </TableHead>
+
+                <TableBody>
+                    {tables.map((table, i) => (
+                        <TableRow key={i}>
+                            <TableCell style={{borderRight: "1px #e0e0e0 solid"}}>
+                                {table.tableIdentifier}
+                            </TableCell>
+                            {timeSlots.map((ts, idx) => (
+                                <Fragment key={idx}>                                    
+                                    <TableCell>
+                                        {(table.orderedBookings[ts._id] && table.orderedBookings[ts._id].time) || ""}
+                                    </TableCell>
+                                    <TableCell>
+                                        {(table.orderedBookings[ts._id] && table.orderedBookings[ts._id].noOfPersons) || ""}
+                                    </TableCell>
+                                    <TableCell style={{borderRight: idx !== timeSlots.length - 1 && "1px #e0e0e0 solid"}}>
+                                        {(table.orderedBookings[ts._id] && table.orderedBookings[ts._id].email) || ""}
+                                    </TableCell>
+                                </Fragment>
+                            ))}
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+
+
+
+        <Fab color="primary" className={classes.floatingButton} aria-label="add" 
+        disabled
+        >
         <Add />
-      </Fab>
+        </Fab>
     </div>
   )
 }
