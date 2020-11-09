@@ -1,9 +1,9 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import {api_url} from '../config';
-import { Table, TableCell, TableRow, TableContainer, TableHead, TableBody, Fab, Button } from '@material-ui/core';
+import { Table, TableCell, TableRow, TableContainer, TableHead, TableBody, Fab, Button, Paper } from '@material-ui/core';
 import { Add, Refresh } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
@@ -22,6 +22,26 @@ const useStyles = makeStyles(theme => ({
     bottom: 20
   },
 }));
+
+const StyledTableRow = withStyles((theme) => ({
+    root: {
+      '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+      },
+    },
+  }))(TableRow);
+
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+        backgroundColor: "#3f51b5",
+        color: theme.palette.common.white,
+    },
+    body: {
+        fontSize: 14,
+    },
+}))(TableCell);
+  
+  
 
 const Bookings = ({ setTitle }) => {
   const classes = useStyles();
@@ -62,15 +82,15 @@ const Bookings = ({ setTitle }) => {
 
         <Button onClick={getBookings}><Refresh /></Button>
 
-        <TableContainer>
-            <Table style={{marginTop: 30}}>
+        <TableContainer component={Paper} style={{marginTop: 30}}>
+            <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell style={{borderRight: "1px #e0e0e0 solid"}}>Table</TableCell>
+                        <StyledTableCell style={{borderRight: "1px #e0e0e0 solid"}}>Table</StyledTableCell>
                         {timeSlots.map((ts, i) => (<>
-                            <TableCell key={i} colSpan={3} align="center" style={{borderRight: i !== timeSlots.length - 1 && "1px #e0e0e0 solid"}}>
+                            <StyledTableCell key={i} colSpan={3} align="center" style={{borderRight: i !== timeSlots.length - 1 && "1px #e0e0e0 solid"}}>
                                 { `${ts.start}-${ts.end}` }
-                            </TableCell>
+                            </StyledTableCell>
                         </>))}
                     </TableRow>
                     <TableRow>
@@ -87,7 +107,7 @@ const Bookings = ({ setTitle }) => {
 
                 <TableBody>
                     {tables.map((table, i) => (
-                        <TableRow key={i}>
+                        <StyledTableRow key={i}>
                             <TableCell style={{borderRight: "1px #e0e0e0 solid"}}>
                                 {table.tableIdentifier}
                             </TableCell>
@@ -104,7 +124,7 @@ const Bookings = ({ setTitle }) => {
                                     </TableCell>
                                 </Fragment>
                             ))}
-                        </TableRow>
+                        </StyledTableRow>
                     ))}
                 </TableBody>
             </Table>

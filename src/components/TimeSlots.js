@@ -1,11 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import {api_url} from '../config';
-import { Table, TableCell, TableRow, TableContainer, TableHead, TableBody, Fab, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
+import { Table, TableCell, TableRow, TableContainer, TableHead, TableBody, Fab, Button, Dialog, DialogActions, DialogContent, DialogTitle, Paper } from '@material-ui/core';
 import { Create, Delete, Add } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
+
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+      backgroundColor: "#3f51b5",
+      color: theme.palette.common.white,
+  },
+  body: {
+      fontSize: 14,
+  },
+}))(TableCell);
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -123,17 +141,17 @@ const TimeSlots = ({ setTitle }) => {
         </DialogActions>
       </Dialog>
 
-      <TableContainer>
+      <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Start</TableCell>
-              <TableCell>End</TableCell>
+              <StyledTableCell>Start</StyledTableCell>
+              <StyledTableCell colSpan={3}>End</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {timeSlots.map(timeslot => (
-              <TableRow key={timeslot._id}>
+              <StyledTableRow key={timeslot._id}>
                 <TableCell>{timeslot.start}</TableCell>
                 <TableCell>{timeslot.end}</TableCell>
                 <TableCell>
@@ -147,7 +165,7 @@ const TimeSlots = ({ setTitle }) => {
                     <Delete />
                   </Button>
                 </TableCell>
-              </TableRow>
+              </StyledTableRow>
             ))}
           </TableBody>
         </Table>

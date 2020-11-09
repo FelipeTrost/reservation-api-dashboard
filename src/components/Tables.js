@@ -1,9 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import {api_url} from '../config';
-import { Table, TableCell, TableRow, TableContainer, TableHead, TableBody, Fab, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
+import { Table, TableCell, TableRow, TableContainer, TableHead, TableBody, Fab, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem, InputLabel, FormControl, Paper } from '@material-ui/core';
 import { Create, Delete, Add } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
+
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+      backgroundColor: "#3f51b5",
+      color: theme.palette.common.white,
+  },
+  body: {
+      fontSize: 14,
+  },
+}))(TableCell);
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -142,20 +160,20 @@ const Tables = ({ setTitle }) => {
         </DialogActions>
       </Dialog>
 
-      <TableContainer>
+      <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>TableIdentifier</TableCell>
-              <TableCell>Capacity</TableCell>
-              <TableCell>Combinable</TableCell>
-              <TableCell>Available</TableCell>
-              <TableCell>Description</TableCell>
+              <StyledTableCell>TableIdentifier</StyledTableCell>
+              <StyledTableCell>Capacity</StyledTableCell>
+              <StyledTableCell>Combinable</StyledTableCell>
+              <StyledTableCell>Available</StyledTableCell>
+              <StyledTableCell colSpan={3}>Description</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {tables.map(table => (
-              <TableRow key={table._id}>
+              <StyledTableRow key={table._id}>
                 <TableCell>{table.tableIdentifier}</TableCell>
                 <TableCell>{table.capacity}</TableCell>
                 <TableCell>{table.combinable ? 'Yes' : 'No'}</TableCell>
@@ -172,7 +190,7 @@ const Tables = ({ setTitle }) => {
                     <Delete />
                   </Button>
                 </TableCell>
-              </TableRow>
+              </StyledTableRow>
             ))}
           </TableBody>
         </Table>
